@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>chat</title>
+        <style>
+            input {display: block;}
+            ul {list-style: none;}
+        </style>
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    </head>
+    <body>
+        <ul id="messages"></ul>
+        <form id="chatbox">
+            <textarea></textarea>
+            <input type="submit" value="send"/>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js">
+        </script>
+        <script>
+            $(function(){
+                var socket = null;
+                var msgBox = $("#chatbox textarea");
+                var messages = $("#messages");
+                $("#chatbox").submit(
+                    function(){
+                        console.log("submit");
+                        if(!msgBox.val()) return false;
+                        if(!socket) {
+                            alert("error: kill websocket");
+                            return false;
+                        }
+                        socket.send(msgBox.val());
+                        console.log(msgBox.val());
+                        msgBox.val("");
+                        return false;
+                    });
+                if (!window["WebSocket"]){
+                    alert("error:websocketに対応していません");
+                } else{
+                    socket = new WebSocket("ws://{{.Host}}/room");
+                    socket.onclose = function() {
+                        alert("connection closed");
+                    }
+                    socket.onmessage = function(e) {
+                        console.log("onmsg:"+e);
+                        messages.append($("<li>").text(e.data));
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
