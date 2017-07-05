@@ -36,18 +36,18 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type googleAuthInfo struct {
-	web gInfo `json:"web"`
+	Web gInfo `json:"web"`
 }
 
 type gInfo struct {
-	client_id                   string   `json:"client_id"`
-	project_id                  string   `json:"project_id"`
-	auth_uri                    string   `json:"auth_uri"`
-	token_uri                   string   `json:"token_uri"`
-	auth_provider_x509_cirt_url string   `json:"token_uri"`
-	client_secret               string   `json:"client_secret"`
-	redirect_uris               []string `json:"redirect_uris"`
-	javascript_origin           []string `json:"javascript_origins"`
+	Client_id                   string   `json:"client_id"`
+	Project_id                  string   `json:"project_id"`
+	Auth_uri                    string   `json:"auth_uri"`
+	Token_uri                   string   `json:"token_uri"`
+	Auth_provider_x509_cirt_url string   `json:"token_uri"`
+	Client_secret               string   `json:"client_secret"`
+	Redirect_uris               []string `json:"redirect_uris"`
+	Javascript_origin           []string `json:"javascript_origins"`
 }
 
 func main() {
@@ -60,12 +60,12 @@ func main() {
 	if err := json.Unmarshal(clientInfo, &data); err != nil {
 		log.Fatal(err)
 	}
-	log.Println(data.web.client_id)
+	log.Println(data.Web.Client_id)
 
 	// gomniauth
 	gomniauth.SetSecurityKey("DevChatApps共通セキュリティキー")
 	gomniauth.WithProviders(
-		google.New(data.web.client_id, data.web.client_secret, "http://localhost:8080/auth/callback/google"),
+		google.New(data.Web.Client_id, data.Web.Client_secret, "http://localhost:8080/auth/callback/google"),
 	)
 	r := newRoom()
 	//r.tracer = trace.New(os.Stdout)

@@ -29,7 +29,7 @@
                             alert("error: kill websocket");
                             return false;
                         }
-                        socket.send(msgBox.val());
+                        socket.send(JSON.stringify({"Message":msgBox.val()}));
                         console.log(msgBox.val());
                         msgBox.val("");
                         return false;
@@ -43,7 +43,13 @@
                     }
                     socket.onmessage = function(e) {
                         console.log("onmsg:"+e);
-                        messages.append($("<li>").text(e.data));
+                        const msg = JSON.parse(e.data)
+                        messages.append(
+                            $("<li>").append(
+                                $("<strong>").text(msg.Name + ":"),
+                                $("<span>").text(msg.Message)
+                            )
+                        )
                     }
                 }
             });
