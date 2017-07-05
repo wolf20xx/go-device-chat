@@ -12,6 +12,7 @@ import (
 
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 )
 
 type templateHandler struct {
@@ -24,8 +25,14 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
+	data := map[string]interface{}{
+		"Host": r.Host,
+	}
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
 	log.Println("call templateHandler", t.filename)
-	t.templ.Execute(w, r)
+	t.templ.Execute(w, data)
 }
 
 type googleAuthInfo struct {
