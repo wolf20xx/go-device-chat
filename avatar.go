@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/md5"
 	"errors"
-	"fmt"
 	"io"
 	"strings"
 )
@@ -16,6 +15,8 @@ type Avatar interface {
 type GravatarAvatar struct{}
 
 type AuthAvatar struct{}
+
+type FileSystemAvatar struct{}
 
 var UseAuthAvatar AuthAvatar
 
@@ -31,11 +32,24 @@ func (_ AuthAvatar) GetAvatarURL(c *client) (string, error) {
 var UseGravatar GravatarAvatar
 
 func (_ GravatarAvatar) GetAvatarURL(c *client) (string, error) {
-	if email, ok := c.userData["email"]; ok {
-		if emailStr, ok := email.(string); ok {
+	if userid, ok := c.userData["userid"]; ok {
+		if useridStr, ok := userid.(string); ok {
 			m := md5.New()
-			io.WriteString(m, strings.ToLower(emailStr))
-			return fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil)), nil
+			io.WriteString(m, strings.ToLower(useridStr))
+			return "//www.gravatar.com/avatar/" + useridStr, nil
+		}
+	}
+	return "", ErrNoAvatarURL
+}
+
+var UseFileSystemAvatar FileSystemAvatar
+
+func (_ FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
+	if userid, ok := c.userData["userid"]; ok {
+		if useridStr, ok := userid.(string); ok {
+			m := md5.New()
+			io.WriteString(m, strings.ToLower(useridStr))
+			return "/avatars/" + useridStr + ".jpg", nil
 		}
 	}
 	return "", ErrNoAvatarURL
